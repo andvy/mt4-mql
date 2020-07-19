@@ -3,6 +3,8 @@
  *
  * Marks inside bars and SR levels of the specified timeframes in the chart. Additionally to the standard MT4 timeframes the
  * indicator supports the timeframes H2, H3, H6 and H8.
+ *
+ * @see  https://www.forexfactory.com/showthread.php?p=1898361#post1898361  ["Daily Inside Bar Setup", Peter Crowns]
  */
 #include <stddefines.mqh>
 int   __INIT_FLAGS__[] = {INIT_TIMEZONE};
