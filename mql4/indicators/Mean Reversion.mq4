@@ -1,5 +1,7 @@
 /**
- * Mean Reversion
+ * Mean Reversion indicator
+ *
+ * @see  https://www.forexfactory.com/showthread.php?t=743125
  */
 #include <stddefines.mqh>
 int   __INIT_FLAGS__[] = {INIT_TIMEZONE};
@@ -138,37 +140,57 @@ int onTick() {
       ShiftIndicatorBuffer(buffer0,   Bars, ShiftedBars, EMPTY_VALUE);
    }
 
+   // update indicator
+   if (Period() < meanTimeframe) {
 
+      if (!UnchangedBars) {
+         double high, low, mean, level25, level75;
+         int startBar, endBar=0;
 
-   if (!UnchangedBars && Period() < meanTimeframe) {
-      int startBar, endBar=0;
+         for (int period=1; period <= meanPeriods; period++) {
+            startBar = iBarShiftNext(NULL, NULL, Time[endBar] - (Time[endBar] % DAY));
 
-      for (int period=1; period <= meanPeriods; period++) {
-         startBar = iBarShiftNext(NULL, NULL, Time[endBar] - (Time[endBar] % DAY));
+            debug("onTick(0.1)  period="+ period +"  startBar="+ startBar +"  endBar="+ endBar +"  openTime="+ TimeToStr(Time[startBar], TIME_FULL));
 
-         debug("onTick(0.1)  period="+ period +"  startBar="+ startBar +"  endBar="+ endBar +"  openTime="+ TimeToStr(Time[startBar], TIME_FULL));
+            high = INT_MIN;
+            low  = INT_MAX;
 
-         double high=INT_MIN, low=INT_MAX, mean, level25, level75;
+            for (int bar=startBar; bar >= endBar; bar--) {
+               high    = MathMax(high, High[bar]);
+               low     = MathMin(low,  Low [bar]);
+               mean    = (high+low)/2;
+               level25 = (mean+low)/2;
+               level75 = (high+mean)/2;
 
-         for (int bar=startBar; bar >= endBar; bar--) {
-            high    = MathMax(high, High[bar]);
-            low     = MathMin(low,  Low [bar]);
-            mean    = (high+low)/2;
-            level25 = (mean+low)/2;
-            level75 = (high+mean)/2;
-
-            if (bar != startBar) {
-               buffer100[bar] = high;
-               buffer75 [bar] = level75;
-               buffer50 [bar] = mean;
-               buffer25 [bar] = level25;
-               buffer0  [bar] = low;
+               if (bar != startBar) {                    // skip drawing of the first bar to interrupt the indicator line
+                  buffer100[bar] = high;
+                  buffer75 [bar] = level75;
+                  buffer50 [bar] = mean;
+                  buffer25 [bar] = level25;
+                  buffer0  [bar] = low;
+               }
             }
+            endBar = startBar + 1;
          }
-         endBar = startBar + 1;
+
+         if (Show.Price) {
+            UpdatePriceLabel(MODE_LEVEL_100, Tick.Time, buffer100[0]);
+            UpdatePriceLabel(MODE_LEVEL_25,  Tick.Time, buffer75 [0]);
+            UpdatePriceLabel(MODE_LEVEL_50,  Tick.Time, buffer50 [0]);
+            UpdatePriceLabel(MODE_LEVEL_75,  Tick.Time, buffer25 [0]);
+            UpdatePriceLabel(MODE_LEVEL_0,   Tick.Time, buffer0  [0]);
+         }
       }
    }
    return(last_error);
+}
+
+
+/**
+ *
+ */
+bool UpdatePriceLabel(int id, datetime time, double price) {
+   return(false);
 }
 
 

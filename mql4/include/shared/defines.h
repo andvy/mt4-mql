@@ -10,9 +10,10 @@
 #define NaT                               INT_MIN        // Not-a-Time: invalid datetime value                       (datetime)INT_MIN = '1901-12-13 20:45:52'
 #define MIN_VALID_POINTER              0x00010000        // minimum value of a valid 32 bit pointer (x86)            (datetime)INT_MAX = '2038-01-19 03:14:07'
 
-#define MAX_ORDER_COMMENT_LENGTH               27
-#define MAX_SYMBOL_GROUP_LENGTH                15
+#define MAX_SYMBOLS                          1024        // max. number of symbols per trade server
 #define MAX_SYMBOL_LENGTH                      11
+#define MAX_SYMBOL_GROUP_LENGTH                15
+#define MAX_ORDER_COMMENT_LENGTH               27
 
 #define NL                                   "\n"        // new line: 0x0A (MQL file functions auto-convert 0x0A to 0x0D0A)
 #define TAB                                  "\t"        // tab: 0x09
